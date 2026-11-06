@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gestión educativa de instrumentos y palabras ARINC 429."
+    />
+    <title>ARINC Lab | Instrumentos y envíos</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="ARINC Lab, inicio">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <span>ARINC <span class="brand-light">LAB</span></span>
+      </a>
+      <span class="topbar-note"><span class="status-dot"></span> Simulador educativo</span>
+    </header>
+
+    <main class="page">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">PROYECTO ESCOLAR · ARINC 429</p>
+          <h1>Instrumentos y envíos</h1>
+          <p class="intro-copy">
+            Configura instrumentos, valida sus valores y genera una palabra ARINC
+            de 32 bits para cada envío.
+          </p>
+        </div>
+        <div class="sim-badge"><span aria-hidden="true">◉</span> SALIDA SIMULADA</div>
+      </section>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="workspace" aria-label="Gestión del sistema">
+        <section class="panel instrument-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">CONFIGURACIÓN</p>
+              <h2>Instrumentos</h2>
+            </div>
+            <span id="instrument-count" class="count-badge">0</span>
+          </div>
+
+          <form id="instrument-form" class="form-stack">
+            <input id="instrument-id" type="hidden" />
+            <label>
+              Nombre del instrumento
+              <input id="instrument-name" name="name" maxlength="60" placeholder="Ej. Altímetro" required />
+            </label>
+            <div class="field-row">
+              <label>
+                Valor mínimo
+                <input id="instrument-min" name="min" type="number" step="any" placeholder="0" required />
+              </label>
+              <label>
+                Valor máximo
+                <input id="instrument-max" name="max" type="number" step="any" placeholder="100" required />
+              </label>
+            </div>
+            <div class="field-row label-row">
+              <label>
+                Label ARINC (octal)
+                <input id="instrument-label" name="label" inputmode="numeric" maxlength="3" placeholder="203" required />
+              </label>
+              <label>
+                SDI
+                <select id="instrument-sdi" name="sdi">
+                  <option value="0">00</option>
+                  <option value="1">01</option>
+                  <option value="2">10</option>
+                  <option value="3">11</option>
+                </select>
+              </label>
+            </div>
+            <p class="field-hint">Label: de 000 a 377 en octal. El mapeo lineal de datos es una simulación configurable.</p>
+            <div class="form-actions">
+              <button id="instrument-submit" class="button button-primary" type="submit">Agregar instrumento</button>
+              <button id="instrument-cancel" class="button button-quiet" type="button" hidden>Cancelar</button>
+            </div>
+          </form>
+
+          <div class="list-heading">
+            <h3>Instrumentos registrados</h3>
+          </div>
+          <div id="instrument-list" class="instrument-list"></div>
+          <p id="instrument-empty" class="empty-state">Todavía no hay instrumentos. Completa el formulario para agregar uno.</p>
+        </section>
+
+        <section class="panel send-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">GENERADOR</p>
+              <h2>Nuevo envío</h2>
+            </div>
+            <span class="panel-icon" aria-hidden="true">↗</span>
+          </div>
+          <form id="send-form" class="form-stack">
+            <label>
+              Instrumento
+              <select id="send-instrument" required>
+                <option value="">Selecciona un instrumento</option>
+              </select>
+            </label>
+            <label>
+              Valor a enviar
+              <div class="input-with-unit">
+                <input id="send-value" type="number" step="any" placeholder="Ingresa un valor" required />
+                <span id="range-hint" class="input-suffix">—</span>
+              </div>
+            </label>
+            <input id="send-id" type="hidden" />
+            <p id="send-range" class="field-hint">El valor debe estar dentro del rango configurado.</p>
+            <div class="form-actions">
+              <button id="send-submit" class="button button-dark" type="submit">Generar palabra ARINC 429 <span aria-hidden="true">→</span></button>
+              <button id="send-cancel" class="button button-quiet" type="button" hidden>Cancelar</button>
+            </div>
+          </form>
+
+          <div id="word-result" class="word-result" hidden>
+            <div class="result-heading">
+              <div>
+                <p class="eyebrow">PALABRA GENERADA</p>
+                <h3 id="result-instrument">—</h3>
+              </div>
+              <span class="valid-tag"><span class="status-dot"></span> VÁLIDA</span>
+            </div>
+            <div class="word-value">
+              <span>PALABRA · HEX</span>
+              <strong id="result-hex">00000000</strong>
+            </div>
+            <div class="bit-output">
+              <div class="bit-labels"><span>32</span><span>24</span><span>16</span><span>8</span><span>1</span></div>
+              <code id="result-bits"></code>
+            </div>
+            <div id="result-fields" class="result-fields"></div>
+            <p class="result-disclaimer">Simulación educativa: el mapeo lineal del dato no reemplaza la codificación específica de cada instrumento real.</p>
+          </div>
+
+          <div class="history-heading">
+            <h3>Historial de envíos</h3>
+            <button id="clear-history" class="text-button" type="button" hidden>Limpiar historial</button>
+          </div>
+          <div id="send-list" class="send-list"></div>
+          <p id="send-empty" class="empty-state">Los envíos generados aparecerán aquí.</p>
+        </section>
+      </section>
+
+      <aside class="notice-card">
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <div>
+          <strong>Sobre este prototipo</strong>
+          <p>
+            La palabra se construye con label octal, SDI, un dato de 19 bits
+            mapeado linealmente al rango, SSM normal y paridad impar. La transmisión
+            por puerto serial/ARINC y una salida de tensión no están implementadas.
+            Cada instrumento real requiere verificar su documentación y hardware.
+          </p>
+        </div>
+      </aside>
+      <footer>ARINC LAB <span>·</span> Herramienta educativa, no certificada para uso aeronáutico</footer>
+    </main>
+  </body>
+</html>
